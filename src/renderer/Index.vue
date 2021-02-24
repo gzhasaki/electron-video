@@ -1,8 +1,8 @@
 <template>
     <el-container style="height: 500px; border: 1px solid #eee">
         <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
-            <div>
-                <el-input placeholder="请输入内容" v-model="wd" class="input-with-select">
+            <div >
+                <el-input size="mini" placeholder="输入视频名称" v-model="wd" class="input-with-select">
                     <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
                 </el-input>
                 <el-tree
@@ -41,6 +41,7 @@
 
     export default {
         mounted() {
+            this.search();
             let player = new Aliplayer({
                     "id": "player-con",
                     "source": "https:\\/\\/youku.cdn2-okzy.com\\/20210221\\/14091_6b64d87d\\/index.m3u8",
@@ -60,7 +61,6 @@
         },
 
         data() {
-
             return {
                 wd: '',
                 sourceUrl: '',
@@ -84,20 +84,13 @@
 
             },
             search() {
-                if (this.wd === '') {
-                    this.$message({
-                        message: '请输入影片名称',
-                        type: 'warning',
-                        duration: 500
-                    });
-                }
                 get("https://api.okzy.tv/api.php/provide/vod/at/json/?wd=" + encodeURI(this.wd)).then(res => {
                     let result = res.list;
                     this.searchData = [];
                     result.forEach(item => {
                         console.log(item)
                         let data = {};
-                        data.label = item.vod_name + "_" + item.type_name;
+                        data.label = item.vod_name + "_" + item.type_name + "_" + item.vod_remarks;
                         data.data = item;
                         this.searchData.push(data)
                     })
@@ -118,4 +111,5 @@
 </script>
 <style scoped>
     @import 'https://g.alicdn.com/de/prismplayer/2.9.3/skins/default/aliplayer-min.css';
+
 </style>
