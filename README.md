@@ -1,4 +1,4 @@
-# vue-project2
+# electron-video
 
 > An electron-vue project
 
