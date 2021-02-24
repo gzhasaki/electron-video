@@ -6,10 +6,17 @@
 
 <script>
     export default {
-        name: 'vue-project2',
+        name: '视频在线播放器',
     }
 </script>
 
 <style>
     /* CSS */
+    #app {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
 </style>

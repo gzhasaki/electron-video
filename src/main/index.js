@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 const electron = require('electron')
-
+// if(require('electron-squirrel-startup')) return;
 
 /**
  * Set `__static` path to static files in production
@@ -20,13 +20,14 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
+    height: 768,
     useContentSize: true,
-    width: 1000,
+    width: 1366,
+    title: '视频在线播放器',
     webPreferences: {webSecurity: false}
   })
   const Menu = electron.Menu
-  // Menu.setApplicationMenu(null)
+  Menu.setApplicationMenu(null)
 
   mainWindow.loadURL(winURL)
 
