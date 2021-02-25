@@ -2,7 +2,7 @@
   "name": "OnlinePlayer",
   "productName": "OnlinePlayer",
   "version": "0.0.1",
-  "author": "Z10004454 <qi.zheng@b-and-qchina.com>",
+  "author": "Z10004454 <gzhasaki@163.com>",
   "description": "An electron-vue project",
   "license": null,
   "main": "./dist/electron/main.js",
@@ -18,8 +18,7 @@
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
-    "postinstall": "",
-    "packager": "electron-packager . electron-quick-start --overwrite --win=x32 --out  ./HelloWorldApp --arch=x64 --app-version=1.0.0 --electron-version=2.0.0"
+    "postinstall": ""
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -49,7 +48,7 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^2.0.4",
+    "electron": "^11.3.0",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-packager": "^12.2.0",

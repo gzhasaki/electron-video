@@ -1,34 +1,37 @@
 <template>
     <el-container style="height: 100%;">
-        <el-aside width="300px"
-                  style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
-            <div>
-                <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd"
-                          class="input-with-select">
-                    <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
-                </el-input>
-                <el-tree
-                        v-loading="loading"
-                        :props="props"
-                        lazy
-                        :load="loadNode"
-                        @node-click="handleNodeClick"
-                        :data="searchData">
-                    <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <div>
+            <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd"
+                      class="input-with-select">
+                <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
+            </el-input>
+            <el-aside width="300px"
+                      style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
+                <div>
 
-        <span v-show="node.level > 1">
-            <el-button
-                    type="text"
-                    size="mini"
-                    @click.stop="() => copyUrl(node)">
-            复制链接
-            </el-button>
-        </span>
-      </span>
-                </el-tree>
-            </div>
-        </el-aside>
+                    <el-tree
+                            v-loading="loading"
+                            :props="props"
+                            lazy
+                            :load="loadNode"
+                            @node-click="handleNodeClick"
+                            :data="searchData">
+                    <span class="custom-tree-node" slot-scope="{ node, data }">
+                            <span :titile="node.label">{{ node.label }}</span>
+                            <span v-show="node.level > 1">
+                                <el-button
+                                        type="text"
+                                        size="mini"
+                                        @click.stop="() => copyUrl(node)">
+                                复制链接
+                                </el-button>
+                            </span>
+                     </span>
+                    </el-tree>
+                </div>
+            </el-aside>
+        </div>
+
 
         <el-container>
             <el-main>
@@ -39,12 +42,6 @@
 </template>
 
 <style>
-    .el-header {
-        background-color: #B3C0D1;
-        color: #333;
-        line-height: 60px;
-    }
-
     .el-aside {
         color: #333;
     }
@@ -54,14 +51,16 @@
     import {
         get
     } from '@/utils/request'
+
     const clipboard = require('electron').clipboard
+    window.player = null;
     export default {
         mounted() {
             this.search();
             // this.initPlayer();
             let _this = this;
             window.addEventListener('keydown', function (events) {
-                if (_this.player) {
+                if (window.player) {
                     let key = events.key;
                     if (key === 'ArrowRight') {
                         _this.prePlay();
@@ -83,7 +82,7 @@
         data() {
             return {
                 loading: true,
-                player: null,
+
                 wd: '',
                 sourceUrl: '',
                 searchData: [],
@@ -98,53 +97,43 @@
         },
         methods: {
             prePlay() {
-                if (this.player) {
-                    let duration = this.player.getDuration();
-                    if (duration) {
-                        let currentTime = this.player.getCurrentTime();
-                        this.player.seek(currentTime + this.interval * duration);
-                    }
+                let duration = window.player.getDuration();
+                if (duration) {
+                    let currentTime = window.player.getCurrentTime();
+                    window.player.seek(currentTime + this.interval * duration);
                 }
             },
             backPlay() {
-                if (this.player) {
-                    let duration = this.player.getDuration();
-                    if (duration) {
-                        let currentTime = this.player.getCurrentTime();
-                        this.player.seek(currentTime - this.interval * duration);
-                    }
+                let duration = window.player.getDuration();
+                if (duration) {
+                    let currentTime = window.player.getCurrentTime();
+                    window.player.seek(currentTime - this.interval * duration);
                 }
             },
             togglePlay() {
-                if (this.player) {
-                    if (this.isPlay) {
-                        this.player.pause();
-                    } else {
-                        this.player.play();
-                    }
+                if (this.isPlay) {
+                    window.player.pause();
+                } else {
+                    window.player.play();
                 }
             },
             upVol() {
-                if (this.player) {
-                    let volume = this.player.getVolume();
-                    if (volume + 0.1 < 1) {
-                        this.player.setVolume(volume + 0.1);
-                    }
+                let volume = window.player.getVolume();
+                if (volume + 0.1 < 1) {
+                    window.player.setVolume(volume + 0.1);
                 }
             },
             downVol() {
-                if (this.player) {
-                    let volume = this.player.getVolume();
-                    if (volume - 0.1 > 0) {
-                        this.player.setVolume(volume - 0.1);
-                    }
+                let volume = window.player.getVolume();
+                if (volume - 0.1 > 0) {
+                    window.player.setVolume(volume - 0.1);
                 }
             },
             initPlayer() {
-                if (this.player) {
+                if (window.player) {
                     return;
                 }
-                this.player = new Aliplayer({
+                window.player = new Aliplayer({
                         "id": "player-con",
                         "source": this.sourceUrl,
                         "width": "100%",
@@ -160,10 +149,10 @@
                     }
                 );
                 let _this = this;
-                this.player.on('play', function (e) {
+                window.player.on('play', function (e) {
                     _this.isPlay = true;
                 })
-                this.player.on('pause', function (e) {
+                window.player.on('pause', function (e) {
                     _this.isPlay = false;
                 })
             },
@@ -226,7 +215,7 @@
                 if (node.leaf) {
                     this.sourceUrl = node.url;
                     this.initPlayer()
-                    this.player.loadByUrl(this.sourceUrl)
+                    window.player.loadByUrl(this.sourceUrl)
                 }
             },
             copyUrl(node) {
@@ -234,7 +223,7 @@
                     clipboard.writeText(node.data.url)
                     this.$message({
                         message: '复制成功',
-                        duration: 300,
+                        duration: 600,
                         type: 'success'
                     });
                 }
