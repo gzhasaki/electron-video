@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        name: '视频在线播放器',
+        name: 'OnlinePlayer',
     }
 </script>
 

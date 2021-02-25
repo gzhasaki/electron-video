@@ -1,8 +1,10 @@
 <template>
-    <el-container  style="height: 100%;">
-        <el-aside width="300px" style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
+    <el-container style="height: 100%;">
+        <el-aside width="300px"
+                  style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
             <div>
-                <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd" class="input-with-select">
+                <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd"
+                          class="input-with-select">
                     <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
                 </el-input>
                 <el-tree
@@ -12,6 +14,18 @@
                         :load="loadNode"
                         @node-click="handleNodeClick"
                         :data="searchData">
+                    <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+
+        <span v-show="node.level > 1">
+            <el-button
+                    type="text"
+                    size="mini"
+                    @click.stop="() => copyUrl(node)">
+            复制链接
+            </el-button>
+        </span>
+      </span>
                 </el-tree>
             </div>
         </el-aside>
@@ -40,6 +54,7 @@
     import {
         get
     } from '@/utils/request'
+    const clipboard = require('electron').clipboard
     export default {
         mounted() {
             this.search();
@@ -54,13 +69,12 @@
                         _this.backPlay();
                     } else if (key === ' ') {
                         _this.togglePlay();
-                    }else if (key === 'ArrowUp') {
+                    } else if (key === 'ArrowUp') {
                         _this.upVol();
                     } else if (key === 'ArrowDown') {
                         _this.downVol();
                     }
                 }
-
 
 
             }, true)
@@ -83,7 +97,7 @@
             }
         },
         methods: {
-            prePlay(){
+            prePlay() {
                 if (this.player) {
                     let duration = this.player.getDuration();
                     if (duration) {
@@ -113,7 +127,7 @@
             upVol() {
                 if (this.player) {
                     let volume = this.player.getVolume();
-                    if (volume  + 0.1 < 1) {
+                    if (volume + 0.1 < 1) {
                         this.player.setVolume(volume + 0.1);
                     }
                 }
@@ -121,7 +135,7 @@
             downVol() {
                 if (this.player) {
                     let volume = this.player.getVolume();
-                    if (volume  - 0.1 > 0) {
+                    if (volume - 0.1 > 0) {
                         this.player.setVolume(volume - 0.1);
                     }
                 }
@@ -204,15 +218,25 @@
                         this.searchData.push(data)
                     })
                     this.wd = '';
-                }).finally(()=>{
+                }).finally(() => {
                     this.loading = false;
                 })
             },
             handleNodeClick(node) {
-                if (node.leaf){
+                if (node.leaf) {
                     this.sourceUrl = node.url;
                     this.initPlayer()
                     this.player.loadByUrl(this.sourceUrl)
+                }
+            },
+            copyUrl(node) {
+                if (node.data && node.data.leaf) {
+                    clipboard.writeText(node.data.url)
+                    this.$message({
+                        message: '复制成功',
+                        duration: 300,
+                        type: 'success'
+                    });
                 }
             }
         }
@@ -220,7 +244,17 @@
 </script>
 <style scoped>
     @import 'https://g.alicdn.com/de/prismplayer/2.9.3/skins/default/aliplayer-min.css';
+
     .el-aside {
-        height:100vh;
+        height: 100vh;
+    }
+
+    .custom-tree-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        padding-right: 8px;
     }
 </style>
