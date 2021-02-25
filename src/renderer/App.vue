@@ -1,36 +1,28 @@
 <template>
-    <div id="app">
-        <header class="header">
-            <el-row>
-                <el-col :span="18">
-                    <div class="title" style="font-size: 14px;
-                                             padding-left: 5px;">OnlinePlayer</div>
-                </el-col>
-                <el-col :span="6">
-                    <div class="systemTool">
-                        <el-button class="button" icon="el-icon-setting" @click="tabPane = 'setting'"></el-button>
-                        <el-button class="button" icon="el-icon-close" @click="clickClose"></el-button>
-                    </div>
-                </el-col>
-            </el-row>
-
-        </header>
-        <router-view style="padding-top: 35px"></router-view>
+    <div id="app" >
+        <router-view  v-if="isRouterAlive" style="height: 100%;"></router-view>
     </div>
 </template>
 
 <script>
-    import Header from "./components/Header";
-    const { ipcRenderer } = require('electron');
     export default {
         name: 'OnlinePlayer',
-        components: {Header},
+        provide() {
+            return {
+                reload: this.reload
+            }
+        },
+        data() {
+            return {
+                isRouterAlive: true,
+            }
+        },
         methods: {
-            clickClose() {
-                if (window.player) {
-                    window.player.pause();
-                }
-                ipcRenderer.send('hide-windows');
+            reload() {
+                this.isRouterAlive = false;
+                this.$nextTick(function () {
+                    this.isRouterAlive = true;
+                })
             }
         }
     }

@@ -1,44 +1,53 @@
 <template>
-    <div>
+    <header class="header" style="-webkit-app-region: drag">
         <el-row>
-            <el-col :span="14" height='50px'>
-                <div class="title">{{'M3U8-Downloader v'}}</div>
+            <el-col :span="18">
+                <div class="title" style="font-size: 14px;
+                                             padding-left: 5px;">{{headerTitle}}
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <div class="systemTool">
+                    <el-button v-if="showSettings" class="button" icon="el-icon-setting"
+                               @click="openNewWindow('#/settings')"></el-button>
+                    <el-button class="button" icon="el-icon-close" @click="close"></el-button>
+                </div>
             </el-col>
         </el-row>
-        <div class="header">
-            <span class="el-icon-minus" @click="minimizeWin"></span>
-            <span class="el-icon-full-screen" @click="maximizeWin"></span>
-            <span class="el-icon-close" @click="closeWin"></span>
-        </div>
-    </div>
+    </header>
 </template>
 <script>
-    import { remote } from 'electron';
+    const {ipcRenderer} = require('electron');
     export default {
+        props: {
+            showSettings: {
+                type: Boolean,
+                default: false
+            },
+            headerTitle: {
+                type: String,
+                default: 'OnlinePlayer'
+            }
+        },
+        mounted() {
+        },
         methods: {
-            minimizeWin(){
-                remote.getCurrentWindow().minimize(); // 窗口最小化
+            openNewWindow(src) {
+                // window.open("https://www.baidu.com")
+                ipcRenderer.send('open-new-window', {routerName: src});
             },
-            maximizeWin(){
-                const win=remote.getCurrentWindow();
-                if(win.isMaximized()){ // 判断 窗口是否已最大化
-                    win.restore();// 恢复原窗口大小
-                }else{
-                    win.maximize();  //最大化窗口
-                }
-            },
-            closeWin(){
-                remote.getCurrentWindow().close(); // 关闭窗口，也结束了所有进程
+            close() {
+                this.$emit('close-click')
             }
         }
     }
 </script>
 <style lang="scss">
-    .header{
-        span{
-            font-size:20px;
-            margin-right:20px;
-            color:red;
+    .header {
+        span {
+            font-size: 20px;
+            margin-right: 20px;
+            color: red;
         }
     }
 </style>

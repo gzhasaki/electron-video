@@ -21,6 +21,7 @@
     "postinstall": ""
   },
   "dependencies": {
+    "winston": "^3.3.2",
     "axios": "^0.18.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-winstaller": "^5.0.0",

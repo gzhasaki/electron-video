@@ -1,21 +1,22 @@
 <template>
-    <el-container style="height: 100%;">
-        <div>
-            <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd"
-                      class="input-with-select">
-                <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
-            </el-input>
-            <el-aside width="300px"
-                      style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
-                <div>
-
-                    <el-tree
-                            v-loading="loading"
-                            :props="props"
-                            lazy
-                            :load="loadNode"
-                            @node-click="handleNodeClick"
-                            :data="searchData">
+    <div>
+        <MyHeader :showSettings="true"></MyHeader>
+        <el-container style="padding-top: 35px;height: calc(100% - 35px);">
+            <div>
+                <el-input @keydown.enter.native="search" size="mini" placeholder="输入视频名称" v-model="wd"
+                          class="input-with-select">
+                    <el-button @click="search" slot="append" icon="el-icon-search"></el-button>
+                </el-input>
+                <el-aside width="300px"
+                          style="height: 100%; overflow-y: scroll;overflow-x: hidden;background-color: rgb(238, 241, 246)">
+                    <div>
+                        <el-tree
+                                v-loading="loading"
+                                :props="props"
+                                lazy
+                                :load="loadNode"
+                                @node-click="handleNodeClick"
+                                :data="searchData">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                             <span :titile="node.label">{{ node.label }}</span>
                             <span v-show="node.level > 1">
@@ -27,18 +28,19 @@
                                 </el-button>
                             </span>
                      </span>
-                    </el-tree>
-                </div>
-            </el-aside>
-        </div>
+                        </el-tree>
+                    </div>
+                </el-aside>
+            </div>
 
-
-        <el-container>
-            <el-main>
-                <div class="prism-player" id="player-con"></div>
-            </el-main>
+            <el-container>
+                <el-main style="overflow: hidden;">
+                    <div class="prism-player" id="player-con"></div>
+                </el-main>
+            </el-container>
         </el-container>
-    </el-container>
+    </div>
+
 </template>
 
 <style>
@@ -51,10 +53,13 @@
     import {
         get
     } from '@/utils/request'
-
-    const clipboard = require('electron').clipboard
+    import Header from "@/components/Header";
+    const { clipboard } = require('electron');
     window.player = null;
     export default {
+        components:{
+            MyHeader:  Header
+        },
         mounted() {
             this.search();
             // this.initPlayer();
@@ -121,12 +126,16 @@
                 let volume = window.player.getVolume();
                 if (volume + 0.1 < 1) {
                     window.player.setVolume(volume + 0.1);
+                } else {
+                    window.player.setVolume(1);
                 }
             },
             downVol() {
                 let volume = window.player.getVolume();
                 if (volume - 0.1 > 0) {
                     window.player.setVolume(volume - 0.1);
+                } else {
+                    window.player.setVolume(0);
                 }
             },
             initPlayer() {
@@ -227,7 +236,8 @@
                         type: 'success'
                     });
                 }
-            }
+            },
+
         }
     };
 </script>
